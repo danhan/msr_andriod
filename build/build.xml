@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="msr" default="main" basedir="../">
+
+	<property environment="env" />		
+	
+	<property name="src.root" location="../" />
+	
+	<property name="msr.src" location="${src.root}/MSR"/>
+	
+	<property name="java.home" value="${env.JAVA_HOME}" />
+	<property name="ant.home" value="${env.ANT_HOME}" />
+	<property name="bin.home" value="${msr.src}/bin" />	
+	<property name="lib.home" value="${msr.src}/lib" />
+	<property name="src.home" value="${msr.src}/src" />
+
+	<path id="classpath">	</path>
+
+	<target name="compile" depends="clean">
+		<mkdir dir="${bin.home}" />
+		<javac srcdir="${src.home}" destdir="${bin.home}/">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+	
+	<!--create msr.jar -->
+	<target name="main" depends="compile">		
+		<jar jarfile="${bin.home}/msr.jar" basedir="${bin.home}" />
+	</target>
+	
+	<target name="clean">
+		<description>clean the jar file last time</description>		
+		<delete dir="${bin.home}" />	
+	</target>	
+	
+	
+</project>

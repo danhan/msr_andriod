@@ -1,0 +1,104 @@
+//entity in bug report: component, owner,reporter,comment,comment-author
+describe bug_report;
+
+//how many bugs
+select count(*) from bug_report;
+//how many component
+select count(distinct(component)) from bug_report;
+//how many owners
+select count(distinct(owner)) from bug_report;
+//how many reporter
+select count(distinct(reportedBy) from bug_report;
+
+//how many comments
+select count(*) from bug_comment;
+//how many authors of comments
+select count(distinct(author)) from bug_comment;
+
+//Status : how many status and respective bug quantities
+select status,count(id) from bug_report group by status;
+
+//closedOn: how many closed/ not closed
+select owner, count(id) from bug_report where owner="null";
+select count(id) from bug_report where owner<>"null";
+
+//owner: how many owners
+select closedOn,count(id) from bug_report group by closedOn;
+
+//type
+select type,count(id) from bug_report group by type;
+
+//priority
+select priority,count(id) from bug_report group by priority;
+
+//component
+select component,count(id) from bug_report group by component;
+select id from bug_report where component='\n'; // there is no component mentioned in the xml
+
+//stars
+select stars,count(id) from bug_report group by stars; // ??? what is the "stars" mean?
+
+//reportedby
+select reportedBy,count(id) from bug_report group by reportedBy;
+
+//desc
+
+
+//commit 
+select count(distinct(commit_hash)) from change_report;
+
+
+//bug id in the title
+select title from bug_report where title regexp '#[0-9]$'
+
+// how many commits mention bugIds
+select subject from change_report where subject regexp "bug #[0-9]*[0-9]" or subject regexp "bug# [0-9]*[0-9]" or subject regexp "bug#[0-9]*[0-9]" or subject regexp "bug # [0-9]*[0-9]" into outfile "/tmp/subject.csv";
+select count(subject) from change_report where subject regexp "bug #[0-9]*[0-9]|bug# [0-9]*[0-9]|bug#[0-9]*[0-9]|bug # [0-9]*[0-9]" into outfile "/tmp/subject.csv";
+
+// how many bug mentions other bugs --- description - 6
+select count(description) from bug_report where description regexp "bug #[0-9]*[0-9]" or description regexp "bug# [0-9]*[0-9]" or description regexp "bug#[0-9]*[0-9]" or description regexp "bug # [0-9]*[0-9]" into outfile "/tmp/desc.csv"; 
+select count(description) from bug_report where description regexp "bug #[0-9]*[0-9]|bug# [0-9]*[0-9]|bug#[0-9]*[0-9]|bug # [0-9]*[0-9]";
+// how many bug mentions other bugs --- comment,what - 26
+select what,bugid from bug_comment where what regexp "bug #[0-9]*[0-9]" or what regexp "bug# [0-9]*[0-9]" or what regexp "bug#[0-9]*[0-9]" or what regexp "bug # [0-9]*[0-9]" into outfile "/tmp/comments.csv"; 
+select count(distinct(bugid)) from bug_comment where what regexp "bug #[0-9]*[0-9]|bug# [0-9]*[0-9]|bug#[0-9]*[0-9]|bug # [0-9]*[0-9]";
+
+// how many bug mentions other files --- description
+select bugid,description from bug_report where description like "/%/%.%" into outfile "/tmp/desc-file.csv";
+select count(distinct(bugid)) from bug_report where description like "/%/%.%";
+
+// how many bug mentions othe files -- comment,what
+select bugid,what from bug_comment where what like "/%/%.%" into outfile "/tmp/what-file.csv";
+select count(distinct(bugid)) from bug_comment where what like "/%/%.%";
+
+// source code change (*.c, *.cc, *.cpp, *.h,.pde,.java, .py,  pl, scala,js,css,.ko,m4,proto,fstab,yaml,sql,dbf )//.png
+select count(distinct(changeid)) from change_message where target regexp "\\.cpp|\\.h|\\.java|\\.pl|\\.cc|\\.pde|.\\py|\\.scala|\\.js|\\.css|\\.ko|\\.m4|\\.proto|\\.fstab|\\.yaml|\\.sql|\\.dbf|\\.properties";
+
+//source code and date
+select id,committer_date from change_report where id IN(select changeid from change_message where target regexp "\\.cpp|\\.h|\\.java|\\.pl|\\.cc|\\.pde|\\.py|\\.scala|\\.js|\\.css|\\.ko|\\.m4|\\.proto|\\.fstab|\\.yaml|\\.sql|\\.dbf|\\.properties");
+
+//build code change (.mk, .sh, .conf_* xml, bat, am, Makefile,automake,kbuild ), 
+select count(distinct(changeid)) from change_message where target regexp "\\.mk|\\.sh|\\.xml|\\.bat|\\.am|\w*kbuild\w*|\w*automake\w*|\\.configure|\w*make\w*/\w*.\w*";
+
+//build code change and date
+select id,committer_date from change_report where id IN(select changeid from change_message where target regexp "\\.mk|\\.sh|\\.xml|\\.bat|\\.am|\w*kbuild\w*|\w*automake\w*|\\.configure|\w*make\w*/\w*.\w*") into outfile "/tmp/buildcode.stat";
+
+//document change ( txt, TXT,in,README,wkt)
+select count(distinct(changeid)) from change_message where target regexp "\\.txt|\\.TXT|\\.in|*README*|\\.wkt";
+//document change and date
+select id,committer_date from change_report where id IN(select changeid from change_message where target regexp "\\.txt|\\.TXT|\\.in|\w*README$|\\.wkt") into outfile "/tmp/doccode.stat";
+
+//test code change
+select changeid,target from change_message where target regexp "\w*test\w*/\w*.\w*" into outfile "/tmp/test.stat";
+select id,committer_date from change_report where id IN(select changeid from change_message where target regexp "\w*test\w*/\w*.\w*") into outfile "/tmp/test-change.stat";
+
+
+//csv, vrt, prj, kml , gif, po, mo,  prefs, .project,kl, cfg,kcm,rc, alisp
+
+ 
+//.vcproj , sln, la,.rc,
+
+select distinct(status) from bug_report;
+
+
+// for change query
+select distinct(project) from change_report into outfile "/tmp/project.csv"

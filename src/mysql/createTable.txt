@@ -1,0 +1,50 @@
+CREATE TABLE bug_report (
+         id INT NOT NULL PRIMARY KEY,
+         bugid INT(10) NOT NULL default -1,
+         title VARCHAR(1024) default "null",
+         status VARCHAR(20) default "null",
+         owner VARCHAR(100) default "null",
+         closedOn VARCHAR(50) default "null",
+         type VARCHAR(100) default "null",
+         priority VARCHAR(20) default "null",
+         component VARCHAR(100) default "null",
+         stars VARCHAR(20) default "null",
+         reportedBy VARCHAR(254) default "null",
+         openedDate VARCHAR(50) default "null",
+         description MEDIUMBLOB,
+         num_of_comments INT(10) default 0        
+       );
+create table bug_comment(
+	id INT NOT NULL PRIMARY KEY,
+	bugid INT(10) references bug_report(bugid),
+	author varchar(100) default "null",
+	when_ varchar(100) default "null",
+	what BLOB
+	);	
+
+create table change_report(
+	id INT NOT NULL PRIMARY KEY,
+	project varchar(100) default "null",
+	commit_hash varchar(100) default "null",
+	tree_hash varchar(100) default "null",
+	parent_hashes varchar(8192) default "null",
+	author_name varchar(100) default "null",
+	author_email varchar(100) default "null",
+	author_date varchar(50) default "null",
+	commiter_name varchar(100) default "null",
+	commiter_email varchar(100) default "null",
+	committer_date varchar(100) default "null",
+	subject varchar(8192) default "null",
+	line_of_msg INT(10) NOT NULL default 0,
+	line_of_target INT(10) NOT NULL default 0
+	);		
+CREATE TABLE change_message (
+	id INT NOT NULL PRIMARY KEY,
+	changeid INT NOT NULL,
+	line varchar(1024) default "null"	
+	);
+CREATE TABLE change_target (
+    id INT NOT NULL PRIMARY KEY,
+	changeid INT NOT NULL,
+	line varchar(1024) default "null"
+	);
